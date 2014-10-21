@@ -1,0 +1,18 @@
+#!/bin/sh
+echo Deleting
+find . -name "*.cpp~"
+find . -name "*.h~"
+find . -name "*.txt~"
+find . -name "*.pro~"
+find . -name "*.ui~"
+find . -name "README.md~"
+find . -name "*.sh~"
+find . -name "*.sql~"
+find . -name "*.cpp~" -exec rm {} \;
+find . -name "*.h~" -exec rm {} \;
+find . -name "*.txt~" -exec rm {} \;
+find . -name "*.pro~" -exec rm {} \;
+find . -name "*.ui~" -exec rm {} \;
+find . -name "README.md~" -exec rm {} \;
+find . -name "*.sh~" -exec rm {} \;
+find . -name "*.sql~" -exec rm {} \;

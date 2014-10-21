@@ -1,0 +1,4 @@
+# sample data from backpop.c for today
+# d1 l1 o p v c1 m x j1 e d r a2 w
+# Date, LastPrice, Open, PrevClose, Volume, Change, Range, Exchange, Cap, EPS, Div/Share, P/E, AvgVol, 52wkRange
+"6/5/2012",189.20,187.92,188.54,3556462,+0.66,"187.56 - 189.85","NYSE",218.2B,13.407,3.10,14.06,4113260,"157.13 - 210.69"

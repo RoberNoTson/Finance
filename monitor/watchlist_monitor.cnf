@@ -1,0 +1,38 @@
+# watchlist_monitor.cnf
+# default location is $HOME
+#
+
+# debug setting for testing [0 | 1] default 0
+debug = 1
+
+# print notices to stdout? [0 | 1] default 0
+verbose = 1
+
+# send email notices? [0 | 1], default 0
+email = 0
+# email address destinations; at least 1 must be provided if email=1
+email_addr_1=netqtet@tx.rr.com
+#email_addr_2=8176907753@messaging.sprintpcs.com
+
+# Save notices to a log file? [0 | 1] default 0
+log = 1
+# path to log file, default $HOME/watchlist_monitor.log
+log_file = ./watchlist_monitor.log
+
+# stock market hours, local time (h:m or h.f) - no defaults
+market_open = 8:30
+market_close = 15:05
+
+# update iterval in (s)econds or (m)inutes, default=60s
+interval = 60s
+
+# database connection info
+# default host is "localhost"
+#db_host = localhost
+db_host = quad
+database = Investments
+db_user = os2
+# comment out or leave blank to be prompted, set to "" when no password is required
+db_pass = os2
+
+# __END__ watchlist_monitor.cnf

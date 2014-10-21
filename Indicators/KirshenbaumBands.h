@@ -1,0 +1,15 @@
+  MYSQL_FIELD *field;
+  unsigned long	*lengths;
+  char	query[1024];
+//  int	Periods=20;
+  int	num_rows,StartRow,n;
+  int	EMA_Periods=EMA_PERIODS;
+  int	bad_row=0;
+  double	coeff=1.75;
+  double	oldema=0.0;
+  double	ema=0.0;
+  double	alpha,sum;
+  double	a,b,d,x,y,sum_x,sum_y,sum_xy,average_x,average_y,average_xy,variance_x;
+  double	linear_regression_line,covariance;
+  double	sum_of_the_squared_errors,average_of_the_squared_errors,se=0;
+  double	kbsup=0,kbinf=0;

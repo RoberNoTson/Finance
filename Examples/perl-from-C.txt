@@ -1,0 +1,87 @@
+-L/usr/lib/perl5/5.12.3/x86_64-linux-thread-multi/CORE/
+-I/usr/lib/perl5/5.12.3/x86_64-linux-thread-multi/CORE/
+-lperl
+
+ccflags ='-D_REENTRANT -D_GNU_SOURCE -DPERL_USE_SAFE_PUTENV -DDEBUGGING -fno-strict-aliasing -pipe -fstack-protector -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64',
+    optimize='-fmessage-length=0 -O2 -Wall -D_FORTIFY_SOURCE=2 -fstack-protector -funwind-tables -fasynchronous-unwind-tables -g -Wall -pipe',
+    cppflags='-D_REENTRANT -D_GNU_SOURCE -DPERL_USE_SAFE_PUTENV -DDEBUGGING -fno-strict-aliasing -pipe -fstack-protector'
+    ccversion='', gccversion='4.5.1 20101208 [gcc-4_5-branch revision 167585]', gccosandvers=''
+    intsize=4, longsize=8, ptrsize=8, doublesize=8, byteorder=12345678
+    d_longlong=define, longlongsize=8, d_longdbl=define, longdblsize=16
+    ivtype='long', ivsize=8, nvtype='double', nvsize=8, Off_t='off_t', lseeksize=8
+    alignbytes=8, prototype=define
+
+ldflags =' -L/usr/local/lib64 -fstack-protector'
+    libpth=/lib64 /usr/lib64 /usr/local/lib64
+    libs=-lm -ldl -lcrypt -lpthread
+    perllibs=-lm -ldl -lcrypt -lpthread
+    libc=/lib64/libc-2.11.3.so, so=so, useshrplib=true, libperl=libperl.so
+    gnulibc_version='2.11.3'
+
+> `perl -MExtUtils::Embed -e ccopts -e ldopts` = 
+-Wl,-E -Wl,-rpath,/usr/lib/perl5/5.12.3/x86_64-linux-thread-multi/CORE  -L/usr/local/lib64 -fstack-protector  -L/usr/lib/perl5/5.12.3/x86_64-linux-thread-multi/CORE -lperl -lm -ldl -lcrypt -lpthread
+ -D_REENTRANT -D_GNU_SOURCE -DPERL_USE_SAFE_PUTENV -DDEBUGGING -fno-strict-aliasing -pipe -fstack-protector -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64  -I/usr/lib/perl5/5.12.3/x86_64-linux-thread-multi/CORE
+
+Perl has a number of C functions that allow you to call Perl subroutines.
+The key function is call_sv. All the other functions are fairly simple wrappers which make it easier to call Perl subroutines in special cases. At the end of the day they will all call call_sv to invoke the Perl subroutine.
+
+All the call_* functions have a flags parameter which is used to pass a bit mask of options to Perl. This bit mask operates identically for each of the functions. The settings available in the bit mask are discussed in FLAG VALUES.
+    call_sv
+
+    call_sv takes two parameters. The first, sv , is an SV*. This allows you to specify the Perl subroutine to be called either as a C string (which has first been converted to an SV) or a reference to a subroutine. The section, Using call_sv, shows how you can make use of call_sv.
+    call_pv
+
+    The function, call_pv, is similar to call_sv except it expects its first parameter to be a C char* which identifies the Perl subroutine you want to call, e.g., call_pv("fred", 0) . If the subroutine you want to call is in another package, just include the package name in the string, e.g., "pkg::fred" .
+    call_method
+
+    The function call_method is used to call a method from a Perl class. The parameter methname corresponds to the name of the method to be called. Note that the class that the method belongs to is passed on the Perl stack rather than in the parameter list. This class can be either the name of the class (for a static method) or a reference to an object (for a virtual method). See perlobj for more information on static and virtual methods and Using call_method for an example of using call_method.
+    call_argv
+
+    call_argv calls the Perl subroutine specified by the C string stored in the subname parameter. It also takes the usual flags parameter. The final parameter, argv , consists of a NULL-terminated list of C strings to be passed as parameters to the Perl subroutine.
+
+All the functions return an integer. This is a count of the number of items returned by the Perl subroutine. The actual items returned by the subroutine are stored on the Perl stack.
+
+As a general rule you should always check the return value from these functions. Even if you are expecting only a particular number of values to be returned from the Perl subroutine, there is nothing to stop someone from doing something unexpected--don't say you haven't been warned.
+
+
+
+// code snippets to add a Perl interpreter to a C program
+#include <EXTERN.h>
+#include <perl.h>
+static PerlInterpreter *my_perl;
+int main(int argc, char **argv, char **env)
+{
+PERL_SYS_INIT3(&argc,&argv,&env);
+my_perl = perl_alloc();
+perl_construct(my_perl);
+PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
+perl_parse(my_perl, NULL, argc, argv, (char **)NULL);
+perl_run(my_perl);
+perl_destruct(my_perl);
+perl_free(my_perl);
+PERL_SYS_TERM();
+}
+// end
+
+// code snippet to 'call_' a Perl subroutine from C
+// see `perlcall` for callable routines
+    #include <EXTERN.h>
+    #include <perl.h>
+    static PerlInterpreter *my_perl;
+    int main(int argc, char **argv, char **env)
+    {
+    char *args[] = { NULL };
+    PERL_SYS_INIT3(&argc,&argv,&env);
+    my_perl = perl_alloc();
+    perl_construct(my_perl);
+    perl_parse(my_perl, NULL, argc, argv, NULL);
+    PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
+    /*** skipping perl_run() ***/
+    call_argv("showtime", G_DISCARD | G_NOARGS, args);
+    perl_destruct(my_perl);
+    perl_free(my_perl);
+    PERL_SYS_TERM();
+    }
+// end
+
+// code to use perl modules
