@@ -1,7 +1,0 @@
-#!/bin/sh
-# push committed changes to github
-
-echo ID: RoberNoTson
-echo PS: GreatGeshad01
-
-git push jv
