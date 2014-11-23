@@ -59,5 +59,6 @@ CURLcode	res;
 
 /* external functions */
   extern	int get_exp_dates(char *);
+  extern	int current;
   
 #endif	// QUOTE_OPTIONS_H

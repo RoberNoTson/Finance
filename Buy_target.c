@@ -1,15 +1,14 @@
 /* Buy_target.c
- * monitor real-time price for a given symbol, notify via email and/or popup when target buy price is reached.
+ * monitor real-time price for a given symbol, notify via EMAIL and/or popup when target buy price is reached.
  * Parms: Sym Price(as 12.34)
  * 
- * compile: gcc -Wall -O2 -ffast-math -o Buy_target Buy_target.c `mysql_config --include --libs` `curl-config --libs`
+ * compile: gcc -Wall -O2 -ffast-math -o Buy_target Buy_target.c -liniparser `mysql_config --include --libs` `curl-config --libs`
  */
 
 // set DEBUG to 1 for testing, 0 for production
 #define         DEBUG   0
-#define		EMAIL 1
-#define		VERBOSE 1
-#define		SLEEP_INTERVAL 120
+#define		INIFILE "notify.list"
+#define		SLEEP_INTERVAL 90
 #define		MARKET_CLOSE	"15:00"
 #define		MARKET_OPEN	"8:30"
 #define         _XOPEN_SOURCE
@@ -22,6 +21,7 @@
 #include        <unistd.h>
 #include        <curl/curl.h>
 #include        <ctype.h>
+#include	<iniparser.h>
 
 MYSQL *mysql;
 struct  MemStruct {
@@ -45,14 +45,12 @@ int main(int argc, char * argv[]) {
   char	Price[16];
   char	SymExch[32];
   char	mail_msg[1024];
+  char	ini_file[1024];
   char	errbuf[CURL_ERROR_SIZE];
   char	market_open[12]=MARKET_OPEN;
   char	market_close[12]=MARKET_CLOSE;
   char 	*saveptr;
   int	x;
-  int	verbose=VERBOSE;
-  int	email=EMAIL;
-  int	interval=SLEEP_INTERVAL;
   float	TargetPrice=FLT_MAX;
   float	cur_price=0.0;
   CURL *curl;
@@ -61,6 +59,7 @@ int main(int argc, char * argv[]) {
   MYSQL_ROW row;
   time_t t;
   struct tm *TM=0;
+  dictionary *d;
 
   // parse cli parms
   if (argc < 3) Usage(argv[0]);
@@ -112,7 +111,7 @@ int main(int argc, char * argv[]) {
     if ((TM = localtime(&t)) == NULL) { perror("localtime"); exit(EXIT_FAILURE); }
     if (DEBUG) printf("Close: %lu\tTM %d\n",strtoul(market_close,&saveptr,10),TM->tm_hour);
     if (TM->tm_hour>strtoul(market_close,&saveptr,10) || 
-      (TM->tm_hour==strtoul(market_close,&saveptr,10) && TM->tm_min>(strtoul(saveptr+1,NULL,10)+(interval/60)))) {
+      (TM->tm_hour==strtoul(market_close,&saveptr,10) && TM->tm_min>(strtoul(saveptr+1,NULL,10)+(SLEEP_INTERVAL/60)))) {
       // market is closed for the day
       printf("Stock market is closed for the day (after %s)\n",market_close);
       exit(EXIT_FAILURE);
@@ -123,7 +122,7 @@ int main(int argc, char * argv[]) {
       printf("Stock market not open yet, sleeping until %s\n",market_open);
       sleep((strtoul(market_open,&saveptr,10)-TM->tm_hour)*3600);
       while (atoi(saveptr+1)>TM->tm_min) {
-	sleep(interval);
+	sleep(SLEEP_INTERVAL);
 	t = time(NULL);
 	if ((TM = localtime(&t)) == NULL) { perror("localtime"); exit(EXIT_FAILURE); }
 	x=strtoul(market_open,&saveptr,10);
@@ -139,7 +138,7 @@ int main(int argc, char * argv[]) {
 	exit(EXIT_FAILURE);
       } else {	// retry
 	if (DEBUG) puts("CURL error connecting to the internet, retrying");
-	sleep(interval);
+	sleep(SLEEP_INTERVAL);
 	continue;
       }
     }
@@ -152,13 +151,13 @@ int main(int argc, char * argv[]) {
     }
     if (chunk.size == 0) {
       if (DEBUG) printf("Error receiving data for %s, retrying\n",Sym);
-      sleep(interval);
+      sleep(SLEEP_INTERVAL);
       continue;
     }
     // do the token parsing here
     if ((saveptr = strstr(chunk.memory,"<span class=\"pr\">")) == NULL) {
       if (DEBUG) printf("Error parsing data for %s, retrying\n",Sym);
-      sleep(interval);
+      sleep(SLEEP_INTERVAL);
       continue;
     }
     saveptr += strlen("<span class=\"pr\">")+1;
@@ -169,22 +168,31 @@ int main(int argc, char * argv[]) {
     if ((cur_price = strtof(Price,NULL)) == 0) break;
     if (errno == ERANGE) break;
     if (DEBUG) printf("cur_price: %.2f Target: %.2f\n",cur_price,TargetPrice);
-    if (DEBUG) printf("Pausing for %d seconds\n",interval);
+    if (DEBUG) printf("Pausing for %d seconds\n",SLEEP_INTERVAL);
     if (cur_price <= TargetPrice) break;
-    sleep(interval);
+    sleep(SLEEP_INTERVAL);
   } while(cur_price > TargetPrice);
   // end While loop
-
-  // process the output message
-  sprintf(query,"Buy %s at %.2f target price",Sym,cur_price);
-  if (strlen(query)) {
-    if (verbose) printf("%s\n",query);
-    if (email) {
-	  sprintf(mail_msg,"echo %s |mailx -s \"%s\" mark_roberson@tx.rr.com",query,query);
-	  system(mail_msg);
-    }
-  }
   curl_easy_cleanup(curl);
   free(chunk.memory);
+
+  // process the output message
+  sprintf(ini_file, "%s/%s", getenv("HOME"), INIFILE);
+  d = iniparser_load(ini_file);
+  if (d==NULL) {
+    puts("INI file not opened, aborting");
+    exit(EXIT_FAILURE);
+  }
+  sprintf(query,"Buy %s at %.2f target price",Sym,cur_price);
+  printf("%s\n",query);
+  if (iniparser_find_entry(d, "Dest:email")) {
+    sprintf(mail_msg,"echo %s |mailx -s \"%s\" %s",query,query, iniparser_getstring(d, "Dest:email", "null"));
+    system(mail_msg);
+  }
+  if (iniparser_find_entry(d, "Dest:sms")) {
+    sprintf(mail_msg,"echo %s |mailx -s \"%s\" %s",query,query, iniparser_getstring(d, "Dest:sms", "null"));
+    system(mail_msg);
+  } 
+  iniparser_freedict(d);
   exit(EXIT_SUCCESS);
 }

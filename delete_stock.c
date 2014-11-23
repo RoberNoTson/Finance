@@ -3,7 +3,7 @@
  * 
  * delete a stock from databases, completely removing all history and info
  * 1. if stock is not active, will ask to deactivate it rather than delete
- * 2. if stock has price history or portfolio history, will ask 3 times for confirmation
+ * 2. if stock has price history or portfolio history, will ask 2 times for confirmation
  * Databases:  
  * compile:  gcc -Wall -O2 -ffast-math delete_stock.c -o delete_stock `mysql_config --include --libs`
  */
