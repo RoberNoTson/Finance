@@ -6,7 +6,7 @@
  * compile: gcc -Wall -O2 -ffast-math all-local-symbols.c -o all-local-symbols `mysql_config --include --libs`
  */
 
-#define		MINVOLUME "80000"
+#define		MINVOLUME "100000"
 #define		MINPRICE "14"
 #define		MAXPRICE "250"
 
