@@ -1,6 +1,6 @@
 // holdings.c
 /* display info about current holdings
- * Parms: none
+ * Parms: optional name of a specific holding to display
  * compile: gcc -Wall -O2 -ffast-math holdings.c -o holdings `mysql_config --include --libs`
  */
 
@@ -28,6 +28,18 @@ int	main (int argc, char *argv[]) {
   float	total=0;
   
   #include "Includes/beancounter-conn.inc"
+  if (argc>1) {
+  // select one holding for menu
+  sprintf(query,"select p.symbol, a.buy_date, a.buy_price, p.current_shares, a.buy_shares, a.ID, \
+    (select sum(buy_shares)-sum(sell_shares) from Investments.activity where symbol=p.symbol \
+    and Lot_id=a.ID group by Lot_id) as lot_size \
+    from Investments.portfolio p, Investments.activity a \
+    where p.current_shares > 0 \
+    and a.symbol=p.symbol \
+    and a.buy_shares > a.sell_shares \
+    and a.symbol = \"%s\" \
+    order by symbol, buy_date, current_shares", argv[1]);
+  } else {
   // select all holdings for menu
   sprintf(query,"select p.symbol, a.buy_date, a.buy_price, p.current_shares, a.buy_shares, a.ID, \
     (select sum(buy_shares)-sum(sell_shares) from Investments.activity where symbol=p.symbol \
@@ -37,6 +49,7 @@ int	main (int argc, char *argv[]) {
     and a.symbol=p.symbol \
     and a.buy_shares > a.sell_shares \
     order by symbol, buy_date, current_shares");
+ }
   if (DEBUG) printf("%s\n",query);
   if (mysql_query(mysql,query)) print_error(mysql,"Failed to query database");
   result=mysql_store_result(mysql);
@@ -58,13 +71,14 @@ int	main (int argc, char *argv[]) {
   }
   if (!num_rows) puts("(none)");
   
+  if (argc == 1) {
   // query cash on hand
   if (mysql_query(mysql,CASH_QUERY)) {
     print_error(mysql, "Failed to query database");
     return(1);
   }
   result=mysql_store_result(mysql);
-  if ((result==NULL) && (mysql_errno(mysql))) {	// no results returned, might be okay if query was not a 'select'
+  if ((result==NULL) && (mysql_errno(mysql))) {	// no results returned
       print_error(mysql, "Store results or query failed");
       return(1);
   } 
@@ -75,14 +89,14 @@ int	main (int argc, char *argv[]) {
   }
   // show cash on hand
   for (x=0;x<66;x++) printf("-");
-//  printf("\n%s\t$%s\n",row[0],row[1]);
   printf("\nCash\t$%s\n",row[1]);
   for (x=0;x<66;x++) printf("-");
   total += strtof(row[1],NULL);
   printf("\nTotal\t$%8.2f\n",total);
+  }
   for (x=0;x<66;x++) printf("=");
   printf("\n");
-  
+    
   // finished with the database
   mysql_free_result(result);
   #include "Includes/mysql-disconn.inc"
