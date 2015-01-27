@@ -41,13 +41,16 @@ int	scan_holdings_parse(int stock_offset) {
   memset(msg,0,sizeof(msg));
   if (strncmp(Today,Stocks->date,10)==0 
     && cur_price <= (Stocks->PAPER_BUY_PRICE - (Stocks->PAPER_BUY_PRICE*0.02))) {
-    sprintf(msg,"Sell %s purchased at %.2f same-day 2%% StopLoss",Stocks->SYMBOL,Stocks->PAPER_BUY_PRICE); 
+//    sprintf(msg,"Sell %s purchased at %.2f same-day 2%% StopLoss",Stocks->SYMBOL,Stocks->PAPER_BUY_PRICE); 
+    sprintf(msg,"Sell %s purchased at %.2f same-day %.1f%% StopLoss",Stocks->SYMBOL,Stocks->PAPER_BUY_PRICE,((cur_price-Stocks->PAPER_BUY_PRICE)/Stocks->PAPER_BUY_PRICE)*100); 
   }
   if (cur_price <= (Stocks->PAPER_BUY_PRICE - (Stocks->PAPER_BUY_PRICE*0.07))) { 
-    sprintf(msg,"Sell %s purchased at %.2f 7%% StopLoss",Stocks->SYMBOL,Stocks->PAPER_BUY_PRICE); 
+//    sprintf(msg,"Sell %s purchased at %.2f 7%% StopLoss",Stocks->SYMBOL,Stocks->PAPER_BUY_PRICE); 
+    sprintf(msg,"Sell %s purchased at %.2f %.1f%% StopLoss",Stocks->SYMBOL,Stocks->PAPER_BUY_PRICE,((cur_price-Stocks->PAPER_BUY_PRICE)/Stocks->PAPER_BUY_PRICE)*100); 
   }
   if (cur_price >= (Stocks->PAPER_BUY_PRICE + (Stocks->PAPER_BUY_PRICE*0.05))) { 
-    sprintf(msg,"Sell %s purchased at %.2f 5%% gain",Stocks->SYMBOL,Stocks->PAPER_BUY_PRICE); 
+//    sprintf(msg,"Sell %s purchased at %.2f 5%% gain",Stocks->SYMBOL,Stocks->PAPER_BUY_PRICE); 
+    sprintf(msg,"Sell %s purchased at %.2f %.1f%% gain",Stocks->SYMBOL,Stocks->PAPER_BUY_PRICE,((cur_price-Stocks->PAPER_BUY_PRICE)/Stocks->PAPER_BUY_PRICE)*100); 
   }
 
   // process the output message
