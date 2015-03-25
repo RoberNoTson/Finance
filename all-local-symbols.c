@@ -26,7 +26,7 @@ int	main(int argc, char * argv[]) {
   char	*filename="/Finance/gt/Scripts/all-symbols-list.txt";
   char	*perms="w+";
   char	*query_list="select distinct(symbol) from stockinfo \
-    where exchange in (\"NasdaqNM\",\"NGM\", \"NCM\", \"NYSE\") \
+    where exchange in (\"NasdaqNM\",\"NGM\", \"NCM\", \"NYSE\", \"NYQ\") \
     and active = true \
     and p_e_ratio is not null \
     and capitalisation is not null \

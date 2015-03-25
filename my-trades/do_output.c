@@ -26,9 +26,14 @@ int	do_output(char *thisDate) {
   result=mysql_store_result(mysql);
   if ((result==NULL) && (mysql_errno(mysql))) { print_error(mysql, "store_results failed for TRADES"); } 
   num_rows=mysql_num_rows(result);
+  if (num_rows == 0) {
+    puts("no trades found\n"); 
+    fprintf(file,"No trades found\n");
+  } else {
   while ((row=mysql_fetch_row(result))) {
     fprintf(file,"%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10]);
   }
+}
   fclose(file);
   mysql_free_result(result);    
   

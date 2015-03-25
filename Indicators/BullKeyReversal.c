@@ -34,7 +34,7 @@ int	main(int argc, char * argv[]) {
   int	num_rows,StartRow,x;
   int	bad_row=0;
   char	*query_list="select distinct(symbol) from stockinfo \
-    where exchange in (\"NasdaqNM\",\"NGM\", \"NCM\", \"NYSE\") \
+    where exchange in (\"NasdaqNM\",\"NGM\", \"NCM\", \"NYSE\", \"NYQ\") \
     and active = true \
     and p_e_ratio is not null \
     and capitalisation is not null \

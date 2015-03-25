@@ -16,9 +16,10 @@ struct	MemStruct {
 #include	"Includes/ParseData.inc"
 
 int	main(int argc, char *argv[]) {
-  char	*qURL1="http://download.finance.yahoo.com/d/quotes.csv?s=";
-  char	*qURL2="&e=.csv&f=b3b2";
-  char	qURL[strlen(qURL1)+strlen(qURL2)+(argc>1 ? strlen(argv[1]) : 1)+1];
+//  char	*qURL1="http://download.finance.yahoo.com/d/quotes.csv?s=";
+//  char	*qURL2="&e=.csv&f=b3b2";
+//  char	qURL[strlen(qURL1)+strlen(qURL2)+(argc>1 ? strlen(argv[1]) : 1)+1];
+  char qURL[256];
   char	Bid[10],Ask[10];
   char	Sym[16];
   int	x;
@@ -40,7 +41,8 @@ int	main(int argc, char *argv[]) {
   curl_global_init(CURL_GLOBAL_NOTHING);
   curl=curl_easy_init();
   if(!curl) exit(EXIT_FAILURE);
-  sprintf(qURL,"http://download.finance.yahoo.com/d/quotes.csv?s=%s&e=.csv&f=b3b2",Sym);
+//  sprintf(qURL,"http://download.finance.yahoo.com/d/quotes.csv?s=%s&e=.csv&f=b3b2",Sym);
+  sprintf(qURL,"http://download.finance.yahoo.com/d/quotes.csv?s=%s&e=.csv&f=ba",Sym);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ParseData);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);

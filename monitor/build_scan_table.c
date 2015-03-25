@@ -23,6 +23,7 @@ int	build_scan_table(void) {
   row = mysql_fetch_row(result);
   strcpy(buyDate,row[0]);
   row = mysql_fetch_row(result);
+  // there is a potential bug here, need to verify that the sellDate is actually the previous business day
   strcpy(sellDate,row[0]);
   mysql_free_result(result);
   if(debug) printf("Buy date %s\t Sell date %s\n",buyDate,sellDate);

@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
   MYSQL_RES *result_list;
   MYSQL_ROW row_list;
   char	*query_main="select distinct(symbol) from stockinfo \
-    where exchange in (\"NasdaqNM\",\"NGM\", \"NCM\", \"NYSE\") \
+    where exchange in (\"NasdaqNM\",\"NGM\", \"NCM\", \"NYSE\", \"NYQ\") \
     and active = true \
     and p_e_ratio is not null \
     and capitalisation is not null \

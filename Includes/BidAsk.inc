@@ -43,7 +43,8 @@ int	BidAsk(char *Sym) {
       return(EXIT_FAILURE);
   }
 
-  sprintf(qURL,"http://download.finance.yahoo.com/d/quotes.csv?s=%s&e=.csv&f=b3b2",Sym);
+//  sprintf(qURL,"http://download.finance.yahoo.com/d/quotes.csv?s=%s&e=.csv&f=b3b2",Sym);
+  sprintf(qURL,"http://download.finance.yahoo.com/d/quotes.csv?s=%s&e=.csv&f=ba",Sym);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ParseBidAsk);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&BidAskchunk);
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);	// >CURLOPT_CONNECTTIMEOUT, total time to wait
