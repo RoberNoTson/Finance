@@ -63,9 +63,10 @@ int main(int argc, char *argv[]) {
     argv[0]);
     exit(EXIT_FAILURE);
   }
-  if (argc >= 2) for (x=0;x<strlen(argv[1]);x++) { Sym[x] = toupper(argv[1][x]); }
-  valid_sym(Sym);
-  if (argc == 2) {
+  if (argc >= 2) {
+    for (x=0;x<strlen(argv[1]);x++) { Sym[x] = toupper(argv[1][x]); }
+    valid_sym(Sym);
+    if (argc == 2) {
       t = time(NULL);
       if ((TM = localtime(&t)) == NULL) {
 	perror("localtime");
@@ -75,8 +76,8 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr, "strftime returned 0");
 	exit(EXIT_FAILURE);
       }
-  }
-  if (argc == 3) {
+    }
+    if (argc >= 3) {	//	process Safe_Periods
     if (strlen(argv[2]) == 10) {	// process a date
       strcpy(qDate, argv[2]);
     } else {
@@ -92,8 +93,19 @@ int main(int argc, char *argv[]) {
 	exit(EXIT_FAILURE);
       }
     }
+    valid_date(Sym);
+
+    if (argc >= 4) {
+      // process Safe_Coefficient
+      Safe_Coeff = atoi(argv[3]);
+      if (argc == 5) {
+	// process Safe_Stickyness
+	Safe_Stickyness = atoi(argv[4]);
+      }
+    }
+   }
   }
-  valid_date(Sym);
+  
   sprintf(query,"select day_high,day_low from stockprices where symbol = \"%s\" order by date asc",Sym);
   if (mysql_query(mysql,query)) print_error(mysql, "Failed to query database");
   result=mysql_store_result(mysql);	  // save the query results

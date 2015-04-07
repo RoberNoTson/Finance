@@ -31,7 +31,7 @@ int Pivot(char *Sym,char *qDate) {
   unsigned long	*lengths;
   
   // get the prices
-  sprintf(query,"select day_high, day_low, day_close, date from stockprices where symbol = \"%s\" and date <= \"%s\" order by date",Sym,qDate);
+  sprintf(query,"select day_high, day_low, day_close, date from stockprices where symbol = \"%s\" and date <= \"%s\" order by date desc limit 1",Sym,qDate);
   if (mysql_query(mysql,query)) { puts("Failed to query database in PP"); return(EXIT_FAILURE); }
   // save the query results
   result=mysql_store_result(mysql);

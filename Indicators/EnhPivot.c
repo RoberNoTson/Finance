@@ -1,7 +1,7 @@
 // EnhPivot.c - calculate Pivot values based on Larry Levin 
-// Usage:  Pivot SYM {[yyyy-mm-dd] | [##]}
+// Usage:  Pivot SYM {[yyyy-mm-dd]}
 /* use CURRENT_DATE unless a 'yyyy-mm-dd' passed as cli parm
- * print only the most current data unless a number is passed as cli parm
+ * print the most current data unless a date is passed
  * The calculation for the new day are calculated from the High (H), low (L) and close (C) of the previous day.
  * Pivot point = P = (H + L + C)/3
  * First area of resistance = R1 = 2P - L
@@ -30,6 +30,10 @@
 #include	"../Includes/valid_date.inc"
 #include	"../Includes/valid_sym.inc"
 
+void Usage(char * argv[]) {
+    printf("Usage:  %s Sym {[yyyy-mm-dd]}\n", argv[0]);
+    exit(EXIT_FAILURE);
+  }
 
 int main(int argc, char *argv[]) {
   time_t t;
@@ -43,10 +47,7 @@ int main(int argc, char *argv[]) {
   #include "../Includes/beancounter-conn.inc"
   
   // parse cli parms
-  if (argc == 1) {
-    printf("Usage:  %s Sym {[yyyy-mm-dd] | [##]}\n", argv[0]);
-    exit(EXIT_FAILURE);
-  }
+  if (argc == 1) { Usage(&argv[0]); }
   if (argc == 2) {
     t = time(NULL);
     TM = localtime(&t);
@@ -63,15 +64,9 @@ int main(int argc, char *argv[]) {
     // is it a date?
     if (strlen(argv[2]) == 10) {	// yes, process it
       strcpy(qDate, argv[2]);
-    } else {  // number of rows to print
-      printf("Function not installed yet\n");
-      exit(EXIT_FAILURE);
-    }
+    } else {  Usage(&argv[0]); }
   }  
-  if (argc > 3) {
-    printf("Usage:  %s Sym {[yyyy-mm-dd] | [##]}\n", argv[0]);
-    exit(EXIT_FAILURE);
-  }
+  if (argc > 3) { Usage(&argv[0]); }
   valid_sym(argv[1]);
   valid_date(argv[1]);
 
@@ -81,7 +76,7 @@ int main(int argc, char *argv[]) {
   strcat(query, argv[1]);
   strcat(query, "\" and date <= \"");
   strcat(query, qDate);
-  strcat(query, "\" order by date");
+  strcat(query, "\" order by date desc limit 1");
 // query processing
   if (mysql_query(mysql,query)) {
     print_error(mysql, "Failed to query database");
@@ -117,7 +112,7 @@ int main(int argc, char *argv[]) {
   S2 = (PP*3)-(CurHigh*2);
   R3 = (PP*2)+CurHigh-(CurLow*2);
   S3 = (PP*2)+CurLow-(CurHigh*2);
-  printf("[%s] =\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n",qDate,S3,S2,S1,PP,R1,R2,R3);  
+  printf("[%s] =\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",qDate,S3,S2,S1,PP,R1,R2,R3);  
   // finished with the database
   #include "../Includes/mysql-disconn.inc"
   exit(EXIT_SUCCESS);

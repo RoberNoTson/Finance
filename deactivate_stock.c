@@ -35,7 +35,7 @@ int	main(int argc, char *argv[]) {
   for (x=0;x<strlen(argv[1]);x++) { Sym[x] = toupper(argv[1][x]); }
   // verify symbol exists in stockinfo, else exit
   #include "Includes/beancounter-conn.inc"
-  valid_sym(Sym);
+  if (valid_sym(Sym)) exit(EXIT_FAILURE);
   sprintf(query,"select active from stockinfo where symbol = \"%s\" and active = true",Sym);
   if (mysql_query(mysql,query)) print_error(mysql, "01 Fatal error - failed to query database in deactivate_stock");
   result=mysql_store_result(mysql);

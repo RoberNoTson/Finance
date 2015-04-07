@@ -4,13 +4,14 @@
 * Algorithm: ((High-Low)*FibVal)+Close
 * Useful for stock price estimates
 * Passing a stock symbol will use the most recent high/low/close data
-* 
+*
+* Fibonacci mulipliers 
 * -6.850 -4.25 -2.618 -1.982 -1.918 -1.800	Extended ranges
-* -1.0
+* -1.0					=Close - (High - Low) ; same as Pivot Point
 * -0.75 -0.618 -0.5 -0.48 -0.382 -0.25	normal retracements
-* 0.000 
+* 0.000 				Close value
 * 0.250 0.382 0.480 0.500 0.618 0.750  	normal retracements
-* 1.0
+* 1.0					=Close + (High - Low) ; same as Pivot Point
 * 1.800 1.918 1.982 2.618 4.250 6.850 	Extended ranges
 * 
 * gcc -Wall -O2 -ffast-math Fibonacci.c -o Fibonacci `mysql_config --include --libs`
@@ -56,7 +57,7 @@ int     main(int argc, char *argv[]) {
     // connect to the database
     #include "Includes/beancounter-conn.inc"
     if (valid_sym(Sym)) print_error(mysql, "Exiting process");
-    // query for the prices
+    // query for most recent High,Low,Close prices
     sprintf(query,"select day_high, day_low, day_close from stockprices where symbol = \"%s\" order by date desc limit 1",Sym);
     if (mysql_query(mysql,query)) print_error(mysql, "Failed to query database");
     if ((result=mysql_store_result(mysql)) == NULL) print_error(mysql, "store_results failed");
