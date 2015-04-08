@@ -13,6 +13,7 @@ int	get_history(char *Sym, char *qDate) {
   char	query[1024];
   char	qURL[1024];
   char	thisDate[12];
+  char thisYear[5];
   char	day_open[32]="DEFAULT";
   char	day_close[32]="DEFAULT";
   char	day_high[32]="DEFAULT";
@@ -21,6 +22,7 @@ int	get_history(char *Sym, char *qDate) {
   char	prev_close[32]="DEFAULT";
 //  int	updated=0;
   char 	*saveptr;
+  
   
   // initialize variables
   printf("Backfilling data for %s since %s\n",Sym,qDate);
@@ -37,7 +39,8 @@ int	get_history(char *Sym, char *qDate) {
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
   curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5);
 //  sprintf(qURL,"%s%s%s",histURL,Sym,histURL2);
-  sprintf(qURL,"%s%s%s%s",histURL,"2015",histURL2,Sym);
+  strftime(thisYear, sizeof(thisYear), "%Y", TM2);
+  sprintf(qURL,"%s%s%s%s",histURL,thisYear,histURL2,Sym);
   curl_easy_setopt(curl, CURLOPT_URL, qURL);
   res=curl_easy_perform(curl);
   if (res) {	// error, no data retrieved
