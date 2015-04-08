@@ -4,8 +4,11 @@
 #include	"./backpop.h"
 
 int	get_history(char *Sym, char *qDate) {
-  char	*histURL="http://table.finance.yahoo.com/table.csv?a=$a&b=$b&c=$c&d=$d&e=$e&f=$f&s=";
-  char	*histURL2="&y=0&g=d&ignore=.csv";
+//  char	*histURL="http://table.finance.yahoo.com/table.csv?a=$a&b=$b&c=$c&d=$d&e=$e&f=$f&s=";
+//  char	*histURL2="&y=0&g=d&ignore=.csv";
+  char	*histURL="http://table.finance.yahoo.com/table.csv?a=0&b=2&d=3&e=8&c="; //'startyear'
+//  char	*histURL2="&f=";		//'endyear'
+  char	*histURL2="&s=";		// symbol
   char	prev_date[12];
   char	query[1024];
   char	qURL[1024];
@@ -33,7 +36,8 @@ int	get_history(char *Sym, char *qDate) {
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
   curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5);
-  sprintf(qURL,"%s%s%s",histURL,Sym,histURL2);
+//  sprintf(qURL,"%s%s%s",histURL,Sym,histURL2);
+  sprintf(qURL,"%s%s%s%s",histURL,"2015",histURL2,Sym);
   curl_easy_setopt(curl, CURLOPT_URL, qURL);
   res=curl_easy_perform(curl);
   if (res) {	// error, no data retrieved
