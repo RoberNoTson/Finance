@@ -125,6 +125,7 @@ int main(int argc, char * argv[]) {
     // see if update is needed
     #include "Includes/beancounter-conn.inc"
     sprintf(query,"select symbol from stockinfo where symbol = \"%s\"",old_symbol);
+    if (DEBUG) printf("%s\n",query);
     if (mysql_query(mysql,query)) print_error(mysql, "Failed to query database");
     if ((result=mysql_store_result(mysql)) == NULL) print_error(mysql, "store_results failed"); 
     if (mysql_num_rows(result) == 0) {	// ticker not present, no action needed
@@ -137,7 +138,7 @@ int main(int argc, char * argv[]) {
     if (mysql_query(mysql,query)) print_error(mysql, "Failed to query database");
     if ((result=mysql_store_result(mysql)) == NULL) print_error(mysql, "store_results failed"); 
     if (mysql_num_rows(result)) {	// ticker exists, can't change the old one
-      if (DEBUG) printf("New symbol %s already exists in stockinfo, can't update %s. Please correct manually.\n",new_symbol,old_symbol);
+      printf("New symbol %s already exists in stockinfo, can't update %s. Please correct manually.\n",new_symbol,old_symbol);
       mysql_free_result(result);
       continue;
     }

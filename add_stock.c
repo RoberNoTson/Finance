@@ -55,7 +55,7 @@ int	main (int argc, char *argv[]) {
   result=mysql_store_result(mysql);
   if ((result==NULL) && (mysql_errno(mysql))) print_error(mysql, "store_results failed"); 
   if (!mysql_num_rows(result)) {
-    // no rows returned, add it
+    // no rows returned, add it to stockinfo
     chunk.memory = calloc(1,1);
     chunk.size = 0;
     curl_global_init(CURL_GLOBAL_NOTHING);
@@ -68,7 +68,7 @@ int	main (int argc, char *argv[]) {
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
     curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5);
-    sprintf(query,"http://download.finance.yahoo.com/d/quotes.csv?s=%s&e=.csv&f=snxj1",Sym);
+    sprintf(query,"http://download.finance.yahoo.com/d/quotes.csv?f=snx&e=.csv&s=%s",Sym);
     curl_easy_setopt(curl, CURLOPT_URL, query);
     res=curl_easy_perform(curl);
     if (res) {	// 0 means no errors

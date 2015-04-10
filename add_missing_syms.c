@@ -37,21 +37,7 @@ struct	MemStruct {
 struct	MemStruct chunk;
 struct	MemStruct info;
 
-//#include	"Includes/ParseData.inc"
-size_t ParseData(void *contents, size_t size, size_t nmemb, void *userp) {
-    size_t realsize = size * nmemb;
-    struct MemStruct *mem = (struct MemStruct *)userp;
-    
-    mem->memory = realloc(mem->memory, mem->size + realsize + 1);
-    if (mem->memory == NULL) {  // out of memory!
-      puts("not enough memory to realloc");
-      exit(EXIT_FAILURE);
-    }
-    memcpy(&(mem->memory[mem->size]), contents, realsize);
-    mem->size += realsize;
-    mem->memory[mem->size] = 0;
-    return realsize;
-}
+#include	"Includes/ParseData.inc"
 
 int GetData(char *qURL) {
   char 	*saveptr=0;
