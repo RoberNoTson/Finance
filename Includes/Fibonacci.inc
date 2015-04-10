@@ -63,31 +63,31 @@ int Fibonacci(char *Sym) {
   // finished with the database
   mysql_free_result(result);
   diff=abs(High-Low);
-  FibStruct[0] = (Close+(-6.85*diff))/100;
-  FibStruct[1] = (Close+(-4.25*diff))/100;
-  FibStruct[2] = (Close+(-2.618*diff))/100;
-  FibStruct[3] = (Close+(-1.982*diff))/100;
-  FibStruct[4] = (Close+(-1.918*diff))/100;
+  FibStruct[0] = (Close+(-6.85*diff))/100;	// Extended Ranges
+  FibStruct[1] = (Close+(-4.25*diff))/100;	// Extended Ranges
+  FibStruct[2] = (Close+(-2.618*diff))/100;	// Extended Ranges
+  FibStruct[3] = (Close+(-1.982*diff))/100;	// Extended Ranges
+  FibStruct[4] = (Close+(-1.918*diff))/100;	// Extended Ranges
   FibStruct[5] = (Close+(-1.8*diff))/100;
-  FibStruct[6] = (Close+(-1.0*diff))/100;
+  FibStruct[6] = (Close+(-1.0*diff))/100;	// same as Pivot Point
   FibStruct[7] = (Close+(-0.75*diff))/100;
   FibStruct[8] = (Close+(-0.618*diff))/100;
   FibStruct[9] = (Close+(-0.5*diff))/100;
   FibStruct[10] = (Close+(-0.382*diff))/100;
   FibStruct[11] = (Close+(-0.25*diff))/100;
-  FibStruct[12] = Close/100;
+  FibStruct[12] = Close/100;			// prev Close value
   FibStruct[13] = (Close+(0.25*diff))/100;
   FibStruct[14] = (Close+(0.382*diff))/100;
   FibStruct[15] = (Close+(0.5*diff))/100;
   FibStruct[16] = (Close+(0.618*diff))/100;
   FibStruct[17] = (Close+(0.75*diff))/100;
-  FibStruct[18] = (Close+(1.0*diff))/100;
+  FibStruct[18] = (Close+(1.0*diff))/100;	// same as Pivot Point
   FibStruct[19] = (Close+(1.8*diff))/100;
-  FibStruct[20] = (Close+(1.918*diff))/100;
-  FibStruct[21] = (Close+(1.982*diff))/100;
-  FibStruct[22] = (Close+(2.618*diff))/100;
-  FibStruct[23] = (Close+(4.25*diff))/100;
-  FibStruct[24] = (Close+(6.85*diff))/100;
+  FibStruct[20] = (Close+(1.918*diff))/100;	// Extended Ranges
+  FibStruct[21] = (Close+(1.982*diff))/100;	// Extended Ranges
+  FibStruct[22] = (Close+(2.618*diff))/100;	// Extended Ranges
+  FibStruct[23] = (Close+(4.25*diff))/100;	// Extended Ranges
+  FibStruct[24] = (Close+(6.85*diff))/100;	// Extended Ranges
 
   return(EXIT_SUCCESS);
 }
