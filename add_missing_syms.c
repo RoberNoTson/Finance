@@ -49,8 +49,8 @@ int GetData(char *qURL) {
   char	name[1024];
   char	query[1024];
   char	theYear[11];
-  char	*qURL1="http://download.finance.yahoo.com/d/quotes.csv?s=";
-  char	*qURL2="&e=.csv&f=snxj1wedra2";
+  char	*qURL1="http://download.finance.yahoo.com/d/quotes.csv?e=.csv&f=snx&s=";
+//  char	*qURL2="&e=.csv&f=snx";
   MYSQL_RES *result;
   MYSQL_ROW row;
   struct tm *TM;
@@ -63,8 +63,8 @@ int GetData(char *qURL) {
   chunk.size = 0;
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_URL, qURL);
-//  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
-//  curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5);
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
+  curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20070802 SeaMonkey/1.1.4");
   res=curl_easy_perform(curl);
   if (res) {
@@ -109,7 +109,8 @@ int GetData(char *qURL) {
 	mysql_free_result(result);
     // new ticker, add it to stockinfo
 	memset(query,0,sizeof(query));
-	sprintf(query,"%s%s%s",qURL1,Ticker,qURL2);
+//	sprintf(query,"%s%s%s",qURL1,Ticker,qURL2);
+	sprintf(query,"%s%s",qURL1,Ticker);
 	info.size = 0;
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&info);
 	curl_easy_setopt(curl, CURLOPT_URL, query);
