@@ -9,7 +9,7 @@
  */
 
 #define		MINVOLUME "80000"
-#define		MINPRICE "14"
+#define		MINPRICE "5"
 #define		MAXPRICE "250"
 
 #include        <my_global.h>
@@ -28,7 +28,7 @@ int	main(int argc, char * argv[]) {
 // get the list of symbols
   int	num_rows;
   char	*query_list="select distinct(symbol) from stockinfo \
-    where exchange in (\"NasdaqNM\",\"NGM\", \"NCM\", \"NYSE\", \"NYQ\") \
+    where exchange in (\"NYSE\",\"NMS\",\"PCX\",\"NYQ\",\"NCM\",\"ASE\",\"NasdaqNM\",\"WCB\",\"PNK\",\"NIM\",\"NGM\") \
     and active = true \
     and p_e_ratio is not null \
     and capitalisation is not null \
