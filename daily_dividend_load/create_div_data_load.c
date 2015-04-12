@@ -5,7 +5,7 @@
  * Assumes that current data is more accurate than previous version and 
  * will update in place where symbol, exDiv date and DivPay date all match.
  * 
- * compile: gcc -Wall -O2 -ffast-math create_div_data_load.c -o create_div_data_load `mysql_config --include --libs` `curl-config --libs`
+ * compile:  
  */
 
 #define	DEBUG	0
@@ -34,7 +34,7 @@ char	qDate[12];
 char    errbuf[CURL_ERROR_SIZE];
 
 #include	"/Finance/bin/C/src/Includes/print_error.inc"
-#include	"/Finance/bin/C/src/Includes/valid_date.inc"
+//#include	"/Finance/bin/C/src/Includes/valid_date.inc"
 #include	"/Finance/bin/C/src/Includes/ParseData.inc"
   
 int	main(int argc, char * argv[]) {
@@ -110,7 +110,7 @@ int	main(int argc, char * argv[]) {
   //Big Loop through all Symbols
   while ((row_list=mysql_fetch_row(result_list))) {
     if(row_list == NULL) { fprintf(stderr,"Skipping bad data for %s\n",row_list[0]); break; }
-    valid_date(row_list[0]);
+//    valid_date(row_list[0]);
 
     memset(div_query,0,sizeof(div_query));
     chunk.size = 0;

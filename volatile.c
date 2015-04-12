@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
     for (x=0;x<9;x++) {
       row=mysql_fetch_row(result);
       if (row==NULL) {
-	puts("Unable to find any valid data");
+	printf("Unable to find any valid data for %s\n",row_list[0]);
 	mysql_close(mysql);
 	exit(EXIT_FAILURE);
       }

@@ -27,7 +27,7 @@
   char qDate[12];
 
 #include	"../Includes/print_error.inc"
-#include	"../Includes/valid_date.inc"
+//#include	"../Includes/valid_date.inc"
 #include	"../Includes/valid_sym.inc"
 
 void Usage(char * argv[]) {
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
   }  
   if (argc > 3) { Usage(&argv[0]); }
   valid_sym(argv[1]);
-  valid_date(argv[1]);
+//  valid_date(argv[1]);
 
   // calculate the Pivot Point
   // get the prices

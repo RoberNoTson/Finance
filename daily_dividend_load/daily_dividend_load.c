@@ -13,7 +13,7 @@
 
 #include	"./daily_dividend_load.h"
 #include	"../Includes/print_error.inc"
-#include	"../Includes/valid_date.inc"
+//#include	"../Includes/valid_date.inc"
 #include	"../Includes/holiday_check.inc"
 #include	"../Includes/ParseData.inc"
 
@@ -93,7 +93,7 @@ int	main(int argc, char * argv[]) {
     if(row_list == NULL) { fprintf(stderr,"Skipping bad or missing data in daily_dividend_load\n"); continue; }
     memset(Sym,0,sizeof(Sym));
     for (x=0;x<strlen(row_list[0]);x++) Sym[x]=toupper(row_list[0][x]);
-    valid_date(Sym);
+//    valid_date(Sym);
     chunk.size = 0;
     // download data for the symbol
     if(curl) {

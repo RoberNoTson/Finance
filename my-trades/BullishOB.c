@@ -3,13 +3,14 @@
  */
 #include	"./my-trades.h"
 int	BullishOB(char * Sym) {
-  float	CurClose,PrevClose,CurLow,PrevLow,CurVolume,PrevVolume,CurHigh,PrevHigh;
+  float	CurClose,PrevClose,CurLow,PrevLow,CurVolume,PrevVolume,CurHigh,PrevHigh,CurOpen;
   char	query[1024];
   int	num_rows,x;
   unsigned long	*lengths;
 
   // process Bullish Outside Bars
-    sprintf(query,"select day_high,day_low,day_close,volume from stockprices where symbol = \"%s\" order by date",Sym);
+//    sprintf(query,"select day_high,day_low,day_close,volume from stockprices where symbol = \"%s\" order by date",Sym);
+    sprintf(query,"select day_high,day_low,day_close,volume,day_open from stockprices where symbol = \"%s\" order by date desc limit 2",Sym);
     if (mysql_query(mysql,query)) print_error(mysql, "Failed to query database");
     result=mysql_store_result(mysql);
     if ((result==NULL) && (mysql_errno(mysql))) { print_error(mysql, "store_results failed"); } 
@@ -19,19 +20,7 @@ int	BullishOB(char * Sym) {
       mysql_free_result(result); 
       return(EXIT_FAILURE);
     }
-    mysql_data_seek(result, num_rows-2);
-    row=mysql_fetch_row(result);
-    // check for nulls
-    if(row==NULL) { fprintf(stderr,"NULL data found, skipping %s\n",Sym); mysql_free_result(result); return(EXIT_FAILURE); }
-    mysql_field_seek(result,0);
-    lengths=mysql_fetch_lengths(result);
-    for (x=0;x<mysql_num_fields(result);x++) {
-      if (!lengths[x]) { fprintf(stderr,"NULL data found, skipping %s\n",Sym); mysql_free_result(result); return(EXIT_FAILURE); }
-    }
-    PrevHigh=strtof(row[0],NULL);
-    PrevLow=strtof(row[1],NULL);
-    PrevClose=strtof(row[2],NULL);
-    PrevVolume=strtof(row[3],NULL);
+//    mysql_data_seek(result, num_rows-2);
     row=mysql_fetch_row(result);
     // check for nulls
     if(row==NULL) { fprintf(stderr,"NULL data found, skipping %s\n",Sym); mysql_free_result(result); return(EXIT_FAILURE); }
@@ -44,10 +33,26 @@ int	BullishOB(char * Sym) {
     CurLow=strtof(row[1],NULL);
     CurClose=strtof(row[2],NULL);
     CurVolume=strtof(row[3],NULL);
+    CurOpen=strtof(row[4],NULL);
+    
+    row=mysql_fetch_row(result);
+    // check for nulls
+    if(row==NULL) { fprintf(stderr,"NULL data found, skipping %s\n",Sym); mysql_free_result(result); return(EXIT_FAILURE); }
+//    mysql_field_seek(result,0);
+    lengths=mysql_fetch_lengths(result);
+    for (x=0;x<mysql_num_fields(result);x++) {
+      if (!lengths[x]) { fprintf(stderr,"NULL data found, skipping %s\n",Sym); mysql_free_result(result); return(EXIT_FAILURE); }
+    }
+    PrevHigh=strtof(row[0],NULL);
+    PrevLow=strtof(row[1],NULL);
+    PrevClose=strtof(row[2],NULL);
+    PrevVolume=strtof(row[3],NULL);
+    
     // find Bullish Outside Day
     if ( (CurHigh >= PrevHigh) &&
          (CurClose >= PrevClose) &&
          (CurVolume > PrevVolume) &&
+         (CurClose >= CurOpen) &&
          (CurLow <= PrevLow) ) {
       sprintf(query,"insert into TRADES (SYMBOL) VALUES(\"%s\")",Sym);
       if (mysql_query(mysql,query)) {

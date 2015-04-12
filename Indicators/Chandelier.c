@@ -22,7 +22,7 @@ char qDate[12];
 
 #include	"../Includes/print_error.inc"
 #include	"../Includes/valid_sym.inc"
-#include	"../Includes/valid_date.inc"
+//#include	"../Includes/valid_date.inc"
 
 int main(int argc, char * argv[]) {
   char query[200];
@@ -70,7 +70,7 @@ int main(int argc, char * argv[]) {
       ATR_Periods=atoi(argv[2]);
     }
   }  
-  valid_date(Sym);
+//  valid_date(Sym);
 
   // get MaxInPeriod of PrevHighs
   sprintf(query,"select day_high from stockprices where symbol = \"%s\" order by date",Sym);

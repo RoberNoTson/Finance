@@ -75,7 +75,7 @@ int	main(int argc, char * argv[]) {
   //Big Loop through all Symbols
   while ((row_list=mysql_fetch_row(result_list)) != NULL) {
     if(row_list == NULL) { fprintf(stderr,"Skipping bad data for %s\n",row_list[0]); break; }
-    valid_date(row_list[0]);
+//    valid_date(row_list[0]);
     strcpy(query,"select day_close,previous_close,day_low,volume from stockprices where symbol = \"");
     strcat(query,row_list[0]);
     strcat(query,"\" and date <= \"");

@@ -39,7 +39,7 @@ char	qDate[16];
 
 #include        "Includes/print_error.inc"
 #include        "Includes/valid_sym.inc"
-#include        "Includes/valid_date.inc"
+//#include        "Includes/valid_date.inc"
 
 void    Usage(char *prog) {
   printf("\nUsage:  %s Sym [ratio(def. 2/1)] [yyyy-mm-dd(def. today)]\n", prog);
@@ -108,7 +108,7 @@ int main(int argc, char * argv[]) {
   }
   #include "Includes/beancounter-conn.inc"
   valid_sym(Sym);
-  valid_date(Sym);
+//  valid_date(Sym);
   if (DEBUG) printf("Using split date: %s\n",qDate);
   // verify the change is really correct
   puts("The following change has been requested:");

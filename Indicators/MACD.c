@@ -20,7 +20,7 @@ MYSQL_ROW row;
 char	qDate[12];
 
 #include        "../Includes/print_error.inc"
-#include	"../Includes/valid_date.inc"
+//#include	"../Includes/valid_date.inc"
 #include	"../Includes/valid_sym.inc"
 
 int Usage(char *prog) {
@@ -99,7 +99,7 @@ int	main(int argc, char *argv[]) {
     else if (strcasecmp(argv[6], "volume") == 0) qType=5;
     else Usage(argv[0]);
   }
-  valid_date(argv[1]);
+//  valid_date(argv[1]);
   
   // query database for required values
   // query all data

@@ -37,10 +37,10 @@ int	main(int argc, char * argv[]) {
     and avg_volume > "MINVOLUME" \
     order by symbol";
   char	query[200];
-  float	CurClose,PrevClose,CurLow,PrevLow,CurVolume,PrevVolume,CurHigh,PrevHigh;
+  float	CurClose,PrevClose,CurLow,PrevLow,CurVolume,PrevVolume,CurHigh,PrevHigh,CurOpen;
   MYSQL_RES *result_list;
   MYSQL_ROW row_list;
-  MYSQL_FIELD *field;
+//  MYSQL_FIELD *field;
   unsigned long	*lengths;
   time_t t;
   struct tm *TM;
@@ -77,18 +77,20 @@ int	main(int argc, char * argv[]) {
   //Big Loop through all Symbols
   while ((row_list=mysql_fetch_row(result_list))) {
     if(row_list == NULL) { fprintf(stderr,"Skipping bad data for %s\n",row_list[0]); break; }
-    valid_date(row_list[0]);
-    sprintf(query,"select day_high,day_low,day_close,volume from stockprices where symbol = \"%s\" and date <= \"%s\" order by date",row_list[0],qDate);
+//    valid_date(row_list[0]);
+//    sprintf(query,"select day_high,day_low,day_close,volume from stockprices where symbol = \"%s\" and date <= \"%s\" order by date",row_list[0],qDate);
+    sprintf(query,"select day_high,day_low,day_close,volume,day_open from stockprices where symbol = \"%s\" and date <= \"%s\" order by date desc limit 2",row_list[0],qDate);
     if (mysql_query(mysql,query)) print_error(mysql, "Failed to query database");
     result=mysql_store_result(mysql);
     if ((result==NULL) && (mysql_errno(mysql))) print_error(mysql, "store_results failed");
     num_rows=mysql_num_rows(result);
-    mysql_data_seek(result, num_rows-2);
+//    mysql_data_seek(result, num_rows-2);
+    
     row=mysql_fetch_row(result);
     // check for nulls
       if(row==NULL) { mysql_free_result(result); continue; }
-      mysql_field_seek(result,0);
-      field = mysql_fetch_field(result);
+//      mysql_field_seek(result,0);
+//      field = mysql_fetch_field(result);
       lengths=mysql_fetch_lengths(result);
       if (!lengths[0]) { mysql_free_result(result); continue; }
       if (row[0] == NULL) { mysql_free_result(result); continue; }
@@ -99,15 +101,17 @@ int	main(int argc, char * argv[]) {
       if (!lengths[3])  { mysql_free_result(result); continue; }
       if (row[3] == NULL) { mysql_free_result(result); continue; }
     
-    PrevHigh=strtof(row[0],NULL);
-    PrevLow=strtof(row[1],NULL);
-    PrevClose=strtof(row[2],NULL);
-    PrevVolume=strtof(row[3],NULL);
+    CurHigh=strtof(row[0],NULL);
+    CurLow=strtof(row[1],NULL);
+    CurClose=strtof(row[2],NULL);
+    CurVolume=strtof(row[3],NULL);
+    CurOpen=strtof(row[4],NULL);
+    
     row=mysql_fetch_row(result);
     // check for nulls
     if(row==NULL) { mysql_free_result(result); continue; }
-    mysql_field_seek(result,0);
-    field = mysql_fetch_field(result);
+//    mysql_field_seek(result,0);
+//    field = mysql_fetch_field(result);
     lengths=mysql_fetch_lengths(result);
     if (!lengths[0]) { mysql_free_result(result); continue; }
     if (row[0] == NULL) { mysql_free_result(result); continue; }
@@ -117,16 +121,19 @@ int	main(int argc, char * argv[]) {
     if (row[2] == NULL) { mysql_free_result(result); continue; }
     if (!lengths[3])  { mysql_free_result(result); continue; }
     if (row[3] == NULL) { mysql_free_result(result); continue; }
+    if (!lengths[4])  { mysql_free_result(result); continue; }
+    if (row[4] == NULL) { mysql_free_result(result); continue; }
     
-    CurHigh=strtof(row[0],NULL);
-    CurLow=strtof(row[1],NULL);
-    CurClose=strtof(row[2],NULL);
-    CurVolume=strtof(row[3],NULL);
+    PrevHigh=strtof(row[0],NULL);
+    PrevLow=strtof(row[1],NULL);
+    PrevClose=strtof(row[2],NULL);
+    PrevVolume=strtof(row[3],NULL);
 
 // Check on Outside Day
     if ( (CurHigh >= PrevHigh) &&
          (CurClose >= PrevClose) &&
          (CurVolume > PrevVolume) &&
+         (CurClose >= CurOpen) &&
          (CurLow <= PrevLow) ) {
 	printf("OB\t%s\n",row_list[0]);
     }

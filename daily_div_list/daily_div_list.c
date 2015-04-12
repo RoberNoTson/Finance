@@ -19,7 +19,7 @@
 #include	"../Includes/PP.inc"
 #include	"../Includes/print_error.inc"
 #include        "../Includes/holiday_check.inc"
-#include	"../Includes/valid_date.inc"
+//#include	"../Includes/valid_date.inc"
 #include	"../Includes/ParseData.inc"
 
 int	main(int argc, char *argv[]) {
@@ -141,7 +141,7 @@ int	main(int argc, char *argv[]) {
       exit(EXIT_FAILURE);
       }
     }
-    valid_date(row_list[0]);
+//    valid_date(row_list[0]);
     if (DEBUG) printf("Calculating values for %s using %s\n",row_list[0],qDate);
     // calculate the Pivot Point
     if ((Pivot(row_list[0],qDate)) == EXIT_FAILURE) { fprintf(stderr,"Skipping bad Pivot data for %s\n",row_list[0]); continue; }

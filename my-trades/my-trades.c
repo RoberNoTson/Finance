@@ -6,7 +6,7 @@
 #include	"./my-trades.h"
 
 #include	"../Includes/print_error.inc"
-#include	"../Includes/valid_date.inc"
+//#include	"../Includes/valid_date.inc"
 #include	"../Includes/holiday_check.inc"
 #include	"../Includes/Safe.inc"
 #include	"../Includes/Chandelier.inc"
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 //Loop through all Symbols to populate temp table
   while ((row_list=mysql_fetch_row(result_list))) {
     if(row_list == NULL) { fprintf(stderr,"01 Skipping null row data for %s\n",row_list[0]); continue; }
-    valid_date(row_list[0]);
+//    valid_date(row_list[0]);
     if (BullishOB(row_list[0])) continue;
     if (BullishKR(row_list[0])) continue;
     if (TrendUp(row_list[0])) continue;

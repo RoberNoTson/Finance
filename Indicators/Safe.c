@@ -27,7 +27,7 @@
 
 #include	"../Includes/print_error.inc"
 #include	"../Includes/valid_sym.inc"
-#include	"../Includes/valid_date.inc"
+//#include	"../Includes/valid_date.inc"
 
 int main(int argc, char *argv[]) {
   char	query[200];
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
 	exit(EXIT_FAILURE);
       }
     }
-    valid_date(Sym);
+//    valid_date(Sym);
 
     if (argc >= 4) {
       // process Safe_Coefficient
