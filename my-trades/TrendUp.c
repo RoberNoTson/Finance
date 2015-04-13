@@ -13,7 +13,7 @@ int	TrendUp(char * Sym) {
   float	Prev2High,Prev2Low,PrevOpen,Prev2Open;
   
     // find TrendUp candidates
-    sprintf(query,"select day_high,day_low,day_open,day_close,previous_close from stockprices where symbol = \"%s\" order by date",Sym);
+    sprintf(query,"select day_high,day_low,day_open,day_close,previous_close from stockprices where symbol = \"%s\" order by date desc limit 25",Sym);
     if (mysql_query(mysql,query)) print_error(mysql, "Failed to query database");
     result=mysql_store_result(mysql);
     if ((result==NULL) && (mysql_errno(mysql))) {
@@ -26,7 +26,8 @@ int	TrendUp(char * Sym) {
       mysql_free_result(result); 
       return(EXIT_FAILURE);
     }
-    mysql_data_seek(result, num_rows-3);
+//    mysql_data_seek(result, num_rows-3);
+    mysql_data_seek(result, 2);
     row=mysql_fetch_row(result);
     // error check for nulls
     if(row==NULL) { delete_bad(Sym); mysql_free_result(result); fprintf(stderr,"07 Skipping NULL data for %s\n",Sym); return(EXIT_FAILURE);}
@@ -39,6 +40,7 @@ int	TrendUp(char * Sym) {
     Prev2Open=strtof(row[2],NULL);
     Prev2Close=strtof(row[3],NULL);
 
+    mysql_data_seek(result, 1);
     row=mysql_fetch_row(result);
     // error check for nulls
     if(row==NULL) { delete_bad(Sym); mysql_free_result(result); fprintf(stderr,"07 Skipping NULL data for %s\n",Sym); return(EXIT_FAILURE);}
@@ -51,6 +53,7 @@ int	TrendUp(char * Sym) {
     PrevOpen=strtof(row[2],NULL);
     PrevClose=strtof(row[3],NULL);
 
+    mysql_data_seek(result, 0);
     row=mysql_fetch_row(result);
     // error check for nulls
     if(row==NULL) { delete_bad(Sym); mysql_free_result(result); fprintf(stderr,"07 Skipping NULL data for %s\n",Sym); return(EXIT_FAILURE);}

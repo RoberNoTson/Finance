@@ -10,12 +10,12 @@ int	BullishOB(char * Sym) {
 
   // process Bullish Outside Bars
 //    sprintf(query,"select day_high,day_low,day_close,volume from stockprices where symbol = \"%s\" order by date",Sym);
-    sprintf(query,"select day_high,day_low,day_close,volume,day_open from stockprices where symbol = \"%s\" order by date desc limit 2",Sym);
+    sprintf(query,"select day_high,day_low,day_close,volume,day_open from stockprices where symbol = \"%s\" order by date desc limit 3",Sym);
     if (mysql_query(mysql,query)) print_error(mysql, "Failed to query database");
     result=mysql_store_result(mysql);
     if ((result==NULL) && (mysql_errno(mysql))) { print_error(mysql, "store_results failed"); } 
     num_rows=mysql_num_rows(result);
-    if(num_rows<20) { 
+    if(num_rows<3) { 
       fprintf(stderr,"Too few rows for %s in Bullish Outside Bar\n",Sym); 
       mysql_free_result(result); 
       return(EXIT_FAILURE);
