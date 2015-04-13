@@ -47,12 +47,14 @@ int main(int argc, char *argv[]) {
   // connect to the database
   #include "../Includes/beancounter-conn.inc"
   valid_sym(Sym);
-  sprintf(query,"select day_high,day_low,day_open,day_close from stockprices where symbol = \"%s\"",Sym);
+  sprintf(query,"select day_high,day_low,day_open,day_close from stockprices where symbol = \"%s\" order by date desc limit 4",Sym);
   if (mysql_query(mysql,query)) print_error(mysql, "Failed to query database");
   result=mysql_store_result(mysql);
   if ((result==NULL) && (mysql_errno(mysql))) print_error(mysql, "store_results failed");
   num_rows=mysql_num_rows(result);
-  mysql_data_seek(result, num_rows-3);
+//  mysql_data_seek(result, num_rows-3);
+  // previous 3 day trading data
+  mysql_data_seek(result, 2);
   row=mysql_fetch_row(result);
   // error check for nulls
   if(row==NULL) { mysql_free_result(result); print_error(mysql,"NULL data found, aborting run"); }
@@ -71,6 +73,8 @@ int main(int argc, char *argv[]) {
   Prev2Low=strtof(row[1],NULL);
   Prev2Open=strtof(row[2],NULL);
   Prev2Close=strtof(row[3],NULL);
+  // Yesterday / last trading day data
+  mysql_data_seek(result, 1);
   row=mysql_fetch_row(result);
   // error check for nulls
   if(row==NULL) { mysql_free_result(result); print_error(mysql,"NULL data found, aborting run"); }
@@ -89,6 +93,8 @@ int main(int argc, char *argv[]) {
   PrevLow=strtof(row[1],NULL);
   PrevOpen=strtof(row[2],NULL);
   PrevClose=strtof(row[3],NULL);
+  // Current/today's data
+  mysql_data_seek(result, 0);
   row=mysql_fetch_row(result);
   // error check for nulls
   if(row==NULL) { mysql_free_result(result); print_error(mysql,"NULL data found, aborting run"); }
