@@ -21,7 +21,7 @@ int	TrendUp(char * Sym) {
     } 
     num_rows=mysql_num_rows(result);
     if (num_rows<ATR_Periods+1) {
-      fprintf(stderr,"Too few rows for %s in TrendUp check\n",Sym); 
+      if (DEBUG) fprintf(stderr,"Too few rows for %s in TrendUp check\n",Sym); 
       delete_bad(Sym);
       mysql_free_result(result); 
       return(EXIT_FAILURE);
