@@ -13,8 +13,8 @@ float	RSI_check(char *Sym) {
   int	bad_row=0;
   char	query[1024];
   
-//  sprintf(query,"select day_close, previous_close, date from stockprices where symbol = \"%s\" order by date",Sym);
-  sprintf(query,"select day_close, previous_close from stockprices where symbol = \"%s\" order by date",Sym);
+//  sprintf(query,"select day_close, previous_close from stockprices where symbol = \"%s\" order by date",Sym);
+  sprintf(query,"(select day_close, previous_close from stockprices where symbol = \"%s\" order by date desc limit %d) order by date",Sym,RSI_Periods+2 );
   if (mysql_query(mysql,query)) { print_error(mysql, "Failed to query database"); }
     result=mysql_store_result(mysql);       // save the query results
     if ((result==NULL) && (mysql_errno(mysql))) { print_error(mysql, "store_results failed"); } 
