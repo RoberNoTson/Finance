@@ -107,6 +107,9 @@ int main(int argc, char *argv[]) {
   }
   
   sprintf(query,"select day_high,day_low from stockprices where symbol = \"%s\" order by date asc",Sym);
+// the format above is actually faster than this one below!
+//  sprintf(query,"(select day_high,day_low,date from stockprices where symbol = \"%s\" order by date desc limit %d) order by date asc",Sym,Safe_Periods+Safe_Stickyness+Safe_Coeff);
+printf("%s\n",query);
   if (mysql_query(mysql,query)) print_error(mysql, "Failed to query database");
   result=mysql_store_result(mysql);	  // save the query results
   if ((result==NULL) && (mysql_errno(mysql))) print_error(mysql, "store_results failed"); 
