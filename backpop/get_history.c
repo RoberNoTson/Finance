@@ -1,5 +1,8 @@
 /* get_history.c
  * part of backpop
+ * pulls Date,Open,High,Low,Close,Volume,Adj Close
+ * beginning from the specified qDate to current.
+ * end_year is available but not used.
  */
 #include	"./backpop.h"
 
