@@ -91,8 +91,16 @@ int	main (int argc, char *argv[]) {
     // got data, parse to verify it is valid
     saveptr=strtok(chunk.memory,",");	//skip symbol
     saveptr=strtok(NULL ,"\"");	//name
+    if (saveptr==NULL) {
+      printf("%s not found at Yahoo\n",Sym);
+      curl_easy_cleanup(curl);
+      free(chunk.memory);
+      #include "Includes/mysql-disconn.inc"
+      exit(EXIT_FAILURE);
+    }      
+      
     strcpy(name,saveptr);
-    if ((strcmp(name,"\"N/A\"")==0)) {
+    if ((strcmp(name,"\"N/A\"")==0) || (strcmp(name,"N/A")==0)) {
       printf("%s not found at Yahoo\n",Sym);
       curl_easy_cleanup(curl);
       free(chunk.memory);
@@ -100,7 +108,21 @@ int	main (int argc, char *argv[]) {
       exit(EXIT_FAILURE);
     }      
     saveptr=strtok(NULL ,"\"");	//exchange
+    if (saveptr==NULL) {
+      printf("%s not found at Yahoo\n",Sym);
+      curl_easy_cleanup(curl);
+      free(chunk.memory);
+      #include "Includes/mysql-disconn.inc"
+      exit(EXIT_FAILURE);
+    }      
     saveptr=strtok(NULL ,"\"");	//exchange
+    if (saveptr==NULL) {
+      printf("%s not found at Yahoo\n",Sym);
+      curl_easy_cleanup(curl);
+      free(chunk.memory);
+      #include "Includes/mysql-disconn.inc"
+      exit(EXIT_FAILURE);
+    }      
     strcpy(exchange,saveptr);
     if ((strcmp(exchange,"\"N/A\"")==0)) {
       printf("%s not found at Yahoo\n",Sym);
