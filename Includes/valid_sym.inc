@@ -11,7 +11,7 @@ int valid_sym(char *Sym) {
 
   sprintf(query,"select distinct(symbol) from stockinfo where symbol = \"%s\"",Sym);
   if (mysql_query(mysql,query)) {
-    printf("%s not found, not validated\n",Sym);
+    printf("%s not found in stockinfo, not validated\n",Sym);
     return(EXIT_FAILURE);
   }
   result=mysql_store_result(mysql);
@@ -20,13 +20,12 @@ int valid_sym(char *Sym) {
   } 
   if ((int)mysql_num_rows(result) == 0)  {
     printf("No entry found for symbol \"%s\" in stockinfo.\nPlease check the spelling, and run \"add_stock\" if it is a valid ticker symbol\n", Sym);
-//    mysql_close(mysql);
     return(EXIT_FAILURE);
   }
 
   sprintf(query,"select distinct(symbol) from stockprices where symbol = \"%s\"",Sym);
   if (mysql_query(mysql,query)) {
-    printf("%s not found, not validated\n",Sym);
+    printf("%s not found in stockprices, not validated\n",Sym);
     return(EXIT_FAILURE);
   }
   result=mysql_store_result(mysql);
@@ -36,7 +35,7 @@ int valid_sym(char *Sym) {
   // fetch the row
   row=mysql_fetch_row(result);
   if (row == NULL) {
-    printf("No data fetched for symbol  \"%s\" in stockprices.\nConsider running \"backpop\" if it is a valid ticker symbol\n", Sym);
+//    printf("No data fetched for symbol  \"%s\" in stockprices.\nConsider running \"backpop\" if it is a valid ticker symbol\n", Sym);
     return(EXIT_FAILURE);
   }
   mysql_field_seek(result,0);

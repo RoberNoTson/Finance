@@ -24,9 +24,9 @@
 MYSQL *mysql;
 #include        "Includes/print_error.inc"
 
+char	*qAMEX="http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=amex&render=download";
 char	*qNASDAQ="http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=nasdaq&render=download";
 char	*qNYSE="http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=nyse&render=download";
-char	*qAMEX="http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=amex&render=download";
 char	errbuf[CURL_ERROR_SIZE];
 CURL *curl;
 CURLcode	res;
@@ -83,14 +83,16 @@ int GetData(char *qURL) {
 	memset(query,0,sizeof(query));
 	memset(Ticker,0,sizeof(Ticker));
 	sscanf(Symptr+1, "%s", Ticker); // skip the initial double-quote and any blank space
-//if (DEBUG) printf("%s\n",Symptr);
+	if (DEBUG) printf("%s\n",Symptr);
 	strtok_r(NULL ,"\n",&saveptr);	// point to the next line
 	if (strchr(Ticker,'"')) memset(strchr(Ticker,'"'),0,1);	// remove the trailing double-quote
-	
+
   // Process the ticker symbol
 	// skip tickers with special characters
 	if (strchr(Ticker,'^')) continue;
 	if (strchr(Ticker,'/')) continue;
+	if (strchr(Ticker,'~')) continue;
+	if (strchr(Ticker,'$')) continue;
     // see if it already exists in the db
 	sprintf(query,"select count(symbol) from stockinfo where symbol=\"%s\"",Ticker);
 	if (mysql_query(mysql,query)) { print_error(mysql, "Failed to query database"); }
@@ -102,14 +104,13 @@ int GetData(char *qURL) {
 	  exit(EXIT_FAILURE);
 	}
 	if ((strcmp(row[0],"0"))>0) {
-//	   if (DEBUG) puts("found in stockinfo");
+	   if (DEBUG) puts("found in stockinfo");
 	    mysql_free_result(result);
 	   continue;
 	}
 	mysql_free_result(result);
     // new ticker, add it to stockinfo
 	memset(query,0,sizeof(query));
-//	sprintf(query,"%s%s%s",qURL1,Ticker,qURL2);
 	sprintf(query,"%s%s",qURL1,Ticker);
 	info.size = 0;
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&info);
@@ -134,17 +135,16 @@ int GetData(char *qURL) {
 //if (DEBUG) printf("%s\n", infoptr);	
 	if (strncmp(infoptr+1+strlen(infoptr), "N/A",3) == 0) { continue; }  // no exchange, skip it
 	strcpy(exchange,infoptr+1);
-if (DEBUG) printf("Adding new stock ticker %s\n",Ticker);
+	if (DEBUG) printf("Adding new stock ticker %s\n",Ticker);
 	memset(strchr(exchange,'"'),0,1);	// remove the trailing double-quote
 	memset(query,0,sizeof(query));
 	sprintf(query,"insert into stockinfo (symbol,name,exchange) values(\"%s\",\"%s\",\"%s\")",Ticker,name,exchange);
-if (DEBUG) printf("%s\n",query);
+	if (DEBUG) printf("%s\n",query);
 	if (!DEBUG) {if (mysql_query(mysql,query)) { printf("%s\n",query); print_error(mysql, "01 Failed to insert new symbol"); } }
     // add pricing history to stockprices
 	memset(query,0,sizeof(query));
 	sprintf(query, "/Finance/bin/backpop %s %s", Ticker, theYear);
 	if (!DEBUG) system(query);
-//	mysql_free_result(result);
   }	// end While
   
   return(res);
@@ -179,9 +179,12 @@ int main(int argc, char * argv[]) {
   }    
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ParseData);
   #include "Includes/beancounter-conn.inc"
+  
   if ((GetData(qAMEX) == 56)) { sleep(2); GetData(qAMEX); }
   if ((GetData(qNASDAQ) == 56)) { sleep(2); GetData(qNASDAQ); }
   if ((GetData(qNYSE) == 56)) { sleep(2); GetData(qNYSE); }
+puts("OK");  
+  
   curl_easy_cleanup(curl);
   free(chunk.memory);
   free(info.memory);
