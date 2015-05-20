@@ -183,7 +183,6 @@ int main(int argc, char * argv[]) {
   if ((GetData(qAMEX) == 56)) { sleep(2); GetData(qAMEX); }
   if ((GetData(qNASDAQ) == 56)) { sleep(2); GetData(qNASDAQ); }
   if ((GetData(qNYSE) == 56)) { sleep(2); GetData(qNYSE); }
-puts("OK");  
   
   curl_easy_cleanup(curl);
   free(chunk.memory);
