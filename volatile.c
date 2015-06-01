@@ -58,7 +58,8 @@ int main(int argc, char *argv[]) {
   if (mysql_query(mysql,query_list)) print_error(mysql, "Failed to query database");
   result_list=mysql_store_result(mysql);
   if ((result_list==NULL) && (mysql_errno(mysql))) print_error(mysql, "store_results failed"); 
-
+  // print header
+  printf("Sym\t Close\t2Day\t5Day\t9Day\t2D%%\t5D%%\t9D%%\n");
   //Big Loop through all Symbols
   while ((row_list=mysql_fetch_row(result_list))) {
     if(row_list == NULL) { fprintf(stderr,"Skipping bad data for %s\n",row_list[0]); break; }
