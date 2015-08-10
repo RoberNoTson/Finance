@@ -78,8 +78,10 @@ int main(int argc, char * argv[]) {
 
   // parse cli parms
   if (argc < 2 || argc > 4) Usage(argv[0]);
+  for (x=0; x<strlen(Sym);x++); Sym[x]=0;
   for (x=0;x<strlen(argv[1]);x++) Sym[x]=toupper(argv[1][x]);
   if (DEBUG) printf("Processing symbol %s\n",Sym);
+  // parse time/date
   t = time(NULL);
   TM = localtime(&t);
   if (TM == NULL) {
@@ -87,8 +89,8 @@ int main(int argc, char * argv[]) {
     exit(EXIT_FAILURE);
   }
   strftime(qDate, sizeof(qDate), "%F", TM);
+  // parse the ratio
   if (argc > 2) {
-    // parse the ratio
     if (strchr(argv[2],'/')) {
       sscanf(argv[2],"%f%*[/]%f",&Num,&Denom);
       Ratio = Denom / Num;

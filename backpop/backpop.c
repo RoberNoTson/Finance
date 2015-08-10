@@ -151,6 +151,7 @@ int main(int argc, char * argv[]) {
   chunk.size=0;
   curl_easy_setopt(curl, CURLOPT_URL, qURL);
   res=curl_easy_perform(curl);
+  if (DEBUG) printf("curl return code %d\n", (int)res);
   if (res) {	// error, no data retrieved
     if (res == 56 || res == 28) {	// retry
 	res=curl_easy_perform(curl);
@@ -174,6 +175,15 @@ int main(int argc, char * argv[]) {
     #include "../Includes/mysql-disconn.inc"
     exit(EXIT_FAILURE);
   }
+  
+  if (DEBUG) printf("Chunk size of returned data = %d\n",(int)chunk.size);
+  if (chunk.size == 0) {
+    printf("%s not found at YahooQuote for today, no date returned\n",Sym);
+    curl_easy_cleanup(curl);
+    free(chunk.memory);
+    #include "../Includes/mysql-disconn.inc"
+    exit(EXIT_FAILURE);
+  }
 
   // parse the price data for today
   memset(thisDate,0,sizeof(thisDate));
@@ -184,6 +194,13 @@ int main(int argc, char * argv[]) {
    thisDate,day_close,day_open,prev_close,volume,day_change,day_low,day_high,exchange, capitalisation,earnings,dividend,p_e_ratio,avg_volume,low_52weeks,high_52weeks);
 
   // is the symbol valid?
+  if (!strlen(thisDate)) {
+    printf("Invalid retrieval from YahooQuote, missing date for %s - aborting run\n", Sym);
+    curl_easy_cleanup(curl);
+    free(chunk.memory);
+    #include "../Includes/mysql-disconn.inc"
+    exit(EXIT_FAILURE);
+  }
   if (!strcmp(thisDate,"N/A")) {	// bad symbol, deactivate it
     printf("Bad symbol %s, deactivated\n",Sym);
     sprintf(query,"update stockinfo set active=false where symbol = \"%s\"",Sym);
@@ -195,10 +212,16 @@ int main(int argc, char * argv[]) {
   }
   // verify the date is today
   // adjust the format to match ISO standard
-  if (!strptime(thisDate,"%m/%d/%Y",TM2))  printf("strptime failed\n");
+  if (!strptime(thisDate,"%m/%d/%Y",TM2)) {
+    printf("strptime failed processing %s - aborting run.\n", thisDate);
+    curl_easy_cleanup(curl);
+    free(chunk.memory);
+    #include "../Includes/mysql-disconn.inc"
+    exit(EXIT_FAILURE);
+  }
   strftime(buf,sizeof(buf),"%F",TM2);
   if (strncmp(qDate,buf,10)) {
-    printf("No current data for %s since %s\n",Sym,buf);
+    printf("No current data for %s since %s - aborting run.\n",Sym,buf);
     curl_easy_cleanup(curl);
     free(chunk.memory);
     #include "../Includes/mysql-disconn.inc"

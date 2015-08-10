@@ -126,9 +126,12 @@ int	get_history(char *Sym, char *qDate) {
   } while ((saveptr=strchr(saveptr+1,'\n')) != NULL);
   // end While loop
   
+  // nothing updated, so return to backpop to process today's data
+  if (!updated) {
+    if (DEBUG) puts("No history updated, returning to caller from get_history");
+    return EXIT_FAILURE;
+  }
   // update the previous_close and day_change for oldest member, if data exists in the database
-  if (!updated) return EXIT_FAILURE;
-    
   sprintf(query,"select day_close from stockprices where symbol = \"%s\" and date < \"%s\" \
     order by date desc limit 1",Sym,thisDate);
   if (mysql_query(mysql,query))  print_error(mysql, "Failed to query database");
