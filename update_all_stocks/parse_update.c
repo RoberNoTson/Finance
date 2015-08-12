@@ -48,28 +48,44 @@ int	parse_update(char *Sym) {
     curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5);
     curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);	// boolean value 0 or 1, use 1 for multi-threading
     sprintf(qURL,"http://download.finance.yahoo.com/d/quotes.csv?s=%s&e=.csv&f=d1l1opvc1mxj1edra2w",Sym);
+//    sprintf(qURL,"http://www.google.com/finance/historical?output=csv&q=%s",Sym);
     curl_easy_setopt(curl, CURLOPT_URL, qURL);
     res=curl_easy_perform(curl);
-    if (res) {	// error, no data retrieved
-	printf("Error %d Unable to access the internet\nRetrying %s...\n",res,Sym);
-	sleep(10);
-	res=curl_easy_perform(curl);
-	if (res) {	// error, no data retrieved
-	  printf("%s\n",errbuf);
-	  print_error(mysql,"curl error, no data retrieved");
-	  printf("for %s\n",Sym);
-      curl_easy_cleanup(curl);
-      free(chunk.memory);
-      exit(EXIT_FAILURE);
-	}
-    }
     // was any data returned?
-    if (strstr(chunk.memory,"404 Not Found")) {
-      printf("%s not found\n",Sym);
+  if (res) {	// error, no data retrieved
+    if (res == 56 || res == 28) {	// retry
+	res=curl_easy_perform(curl);
+	if (res) {
+	  printf("Error %d Unable to access the internet\n",res);
+	  printf("%s\n",errbuf);
+      curl_easy_cleanup(curl);
+      free(chunk.memory);
+	  exit(EXIT_FAILURE);
+	}
+    } else {	// retry
+      printf("Error %d Unable to access the internet\n",res);
+      printf("%s\n",errbuf);
+      print_error(mysql,"curl error, no data retrieved");
       curl_easy_cleanup(curl);
       free(chunk.memory);
       exit(EXIT_FAILURE);
     }
+  }
+  // was any data returned?
+  if (strstr(chunk.memory,"404 Not Found")) { 
+    printf("%s not found at YahooQuote for today, \"404\" error\n",Sym);
+    curl_easy_cleanup(curl);
+    free(chunk.memory);
+    #include "../Includes/mysql-disconn.inc"
+    exit(EXIT_FAILURE);
+  }
+  if (chunk.size == 0) {
+    printf("%s not found at YahooQuote for today, no date returned\n",Sym);
+    curl_easy_cleanup(curl);
+    free(chunk.memory);
+    #include "../Includes/mysql-disconn.inc"
+    exit(EXIT_FAILURE);
+  }
 
   #include      "/Finance/bin/C/src/Includes/beancounter-conn.inc"
   // parse the supplied data
@@ -77,6 +93,13 @@ int	parse_update(char *Sym) {
   sscanf(chunk.memory,"%*[\"]%[0-9/NA]%*[\",]%[0-9./NA]%*[,]%[0-9./NA]%*[,]%[0-9./NA]%*[,]%[0-9/NA]%*[,]%[0-9.-+/NA]%*[\",]%[0-9./NA]%*[ -]%[0-9./NA]%*[\",]%[A-Za-z/]%*[\",]%[0-9.BMTK/NA]%*[,]%[0-9./NA]%*[,]%[0-9./NA]%*[,]%[0-9./NA]%*[,]%[0-9/NA]%*[\",]%[0-9./NA]%*[ -]%[0-9./NA]%*s",
       thisDate,day_close,day_open,prev_close,volume,day_change,day_low,day_high,exchange, capitalisation,earnings,dividend,p_e_ratio,avg_volume,low_52weeks,high_52weeks);
   // is it valid?
+  if (!strlen(thisDate)) {
+    printf("Invalid retrieval from YahooQuote, missing date for %s - aborting run\n", Sym);
+    curl_easy_cleanup(curl);
+    free(chunk.memory);
+    exit(EXIT_FAILURE);
+  }
+
   if (!strcmp(thisDate,"\"N/A\"")) {	// bad symbol, deactivate it
     sprintf(query,"update stockinfo set active=false where symbol = \"%s\"",Sym);
     if (!DEBUG) mysql_query(mysql,query);

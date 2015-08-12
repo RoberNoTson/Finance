@@ -180,6 +180,14 @@ int main(int argc, char * argv[]) {
   sscanf(chunk.memory,"%*[\"]%[0-9/NA]%*[\",]%[0-9./NA]%*[,]%[0-9./NA]%*[,]%[0-9./NA]%*[,]%[0-9/NA]%*[,]%[0-9.-+/NA]%*[\",]%[0-9./NA]%*[ -]%[0-9./NA]%*[\",]%[A-Za-z/]%*[\",]%[0-9.BMTK/NA]%*[,]%[0-9./NA]%*[,]%[0-9./NA]%*[,]%[0-9./NA]%*[,]%[0-9/NA]%*[\",]%[0-9./NA]%*[ -]%[0-9./NA]%*s",
       thisDate,day_close,day_open,prev_close,volume,day_change,day_low,day_high,exchange, capitalisation,earnings,dividend,p_e_ratio,avg_volume,low_52weeks,high_52weeks);
   // is it valid?
+  if (!strlen(thisDate)) {
+    printf("Invalid retrieval from YahooQuote, missing date for %s - aborting run\n", Sym);
+    curl_easy_cleanup(curl);
+    free(chunk.memory);
+    #include "Includes/mysql-disconn.inc"
+    exit(EXIT_FAILURE);
+  }
+
   if (!strcmp(thisDate,"\"N/A\"")) {	// bad symbol, deactivate it
     printf("Deactivated bad symbol %s\n",Sym);
     sprintf(query,"update stockinfo set active=false where symbol = \"%s\"",Sym);

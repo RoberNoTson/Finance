@@ -5,6 +5,8 @@
  * This program should normally be run on the same business day, after market close.
  * NOTE: be cautious with "force" as data will be overwritten with no validity checks
  * 
+ * NOTE: changed to use Google data since Yahoo has become unreliable  - 10/8/15
+ * 
  * Parms: [force]
  * compile: gcc -Wall -O2 -ffast-math -o update_all_stocks update_all_stocks.c `mysql_config --include --libs` `curl-config --libs`
  */
